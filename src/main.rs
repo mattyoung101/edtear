@@ -1,31 +1,31 @@
-use std::{fs::File, io::{Seek, Write}};
+use log::{error, info};
+use market::Market;
+mod eddn;
+mod market;
 
-fn main() {
-    let mut messages = Vec::new();
-    let mut file = File::create("out.cbor").unwrap();
+#[tokio::main]
+async fn main() {
+    env_logger::init();
 
+    info!("Connecting to CouchDB");
+
+    let client = couch_rs::Client::new_local_test().unwrap();
+    let db = client.db("edtear").await.unwrap();
+
+    info!("Connecting to EDDN");
     for envelope in eddn::subscribe(eddn::URL) {
         if envelope.is_err() {
+            error!("Error receiving message");
             continue;
         }
 
-        match envelope.ok().unwrap().message {
-            eddn::Message::Commodity(commodity) => {
-                // dbg!(&commodity);
-                messages.push((commodity.timestamp, commodity.event));
+        dbg!(envelope);
 
-                // write to file (json)
-                // let json = serde_json::to_string_pretty(&messages).unwrap();
-
-                // write to file (CBOR)
-                let cbor = serde_cbor::to_vec(&messages).unwrap();
-                file.set_len(0).unwrap();
-                file.seek(std::io::SeekFrom::Start(0)).unwrap();
-                file.write(&cbor).unwrap();
-
-                println!("Received message");
-            },
-            _ => {}
-        }
+        // match envelope.ok().unwrap().message {
+        //     eddn::Message::Commodity() => {
+        //         info!("Received commodity");
+        //     }
+        //     _ => {}
+        // }
     }
 }
