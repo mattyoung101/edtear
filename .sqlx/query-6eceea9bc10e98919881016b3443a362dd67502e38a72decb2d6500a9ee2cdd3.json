@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                        INSERT INTO systems (\n                            id, name, date, coords\n                        ) VALUES (\n                            $1, $2, $3, ST_MakePoint($4, $5, $6)\n                        );\n                        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Varchar",
+        "Timestamp",
+        "Float8",
+        "Float8",
+        "Float8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6eceea9bc10e98919881016b3443a362dd67502e38a72decb2d6500a9ee2cdd3"
+}

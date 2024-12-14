@@ -16,7 +16,7 @@ sqlx migrate run
 Import EDSM data:
 
 ```
-cargo run -- ingest-edsm --systems-json-path systemsWithCoordinates.json --stations-json-path stations.json
+cargo run -- ingest-edsm --systems-json-path systemsPopulated.json --stations-json-path stations.json
 ```
 
 ## Licence

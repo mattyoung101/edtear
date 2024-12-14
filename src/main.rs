@@ -1,4 +1,4 @@
-use clap::{Args, Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand};
 use log::info;
 use color_eyre::eyre::Result;
 pub mod edsm;
@@ -21,8 +21,10 @@ enum Commands {
     #[command(arg_required_else_help = true)]
     IngestEdsm {
         #[arg(long)]
+        /// Path to populated systems JSON from EDSM
         systems_json_path: std::path::PathBuf,
         #[arg(long)]
+        /// Path to stations JSON from EDSM
         stations_json_path: std::path::PathBuf,
     },
 
