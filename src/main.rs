@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use log::info;
 use color_eyre::eyre::Result;
 pub mod edsm;
+pub mod eddn;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

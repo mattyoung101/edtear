@@ -1,17 +1,10 @@
 use color_eyre::eyre::Result;
-use edsm_dumps_model::model::{
-    station::Station, system::SystemWithCoordinates, system_populated::SystemPopulated,
-};
+use edsm_dumps_model::model::{station::Station, system_populated::SystemPopulated};
 use futures::StreamExt;
 use indicatif::ProgressIterator;
-use log::info;
-use log::warn;
-use serde::Deserialize;
+use log::{info, warn};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use std::{
-    fs::File,
-    io::{BufReader, BufWriter, Write},
-};
+use std::{fs::File, io::BufReader};
 
 // Not all stations in the document are valid, so we need to skip errors
 // Reference: https://stackoverflow.com/a/73654367/5007892
@@ -33,7 +26,7 @@ async fn read_systems(systems_json_path: std::path::PathBuf, pool: &Pool<Postgre
 
         futures::stream::iter(chunk)
             .for_each(|system| async move {
-                let _ = sqlx::query!(
+                let result = sqlx::query!(
                     r#"
                         INSERT INTO systems (
                             id, name, date, coords
@@ -50,6 +43,17 @@ async fn read_systems(systems_json_path: std::path::PathBuf, pool: &Pool<Postgre
                 )
                 .execute(pool)
                 .await;
+
+                match result {
+                    Ok(_) => {}
+                    Err(error) => {
+                        // these errors are mostly caused by player carriers, which we will just
+                        // ignore (we won't use them for trading anyway)
+                        if !error.to_string().contains("duplicate") {
+                            warn!("Failed to insert system id {} name {}: {}", system.id, system.name, error);
+                        }
+                    }
+                }
             })
             .await;
 
