@@ -1,13 +1,16 @@
+use clap::error;
 use color_eyre::eyre::Result;
-use edsm_dumps_model::model::{station::Station, system_populated::SystemPopulated};
+use edsm_dumps_model::model::{
+    station::{Station, StationType},
+    system_populated::SystemPopulated,
+};
 use futures::StreamExt;
 use indicatif::ProgressIterator;
-use log::{info, warn};
+use log::{info, warn, error};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use std::{fs::File, io::BufReader};
 
-// Not all stations in the document are valid, so we need to skip errors
-// Reference: https://stackoverflow.com/a/73654367/5007892
+// Ingests data from Elite: Dangerous Star Map data dumps
 
 async fn read_systems(systems_json_path: std::path::PathBuf, pool: &Pool<Postgres>) -> Result<()> {
     info!("Parsing systems JSON");
@@ -50,7 +53,10 @@ async fn read_systems(systems_json_path: std::path::PathBuf, pool: &Pool<Postgre
                         // these errors are mostly caused by player carriers, which we will just
                         // ignore (we won't use them for trading anyway)
                         if !error.to_string().contains("duplicate") {
-                            warn!("Failed to insert system id {} name {}: {}", system.id, system.name, error);
+                            warn!(
+                                "Failed to insert system id {} name {}: {}",
+                                system.id, system.name, error
+                            );
                         }
                     }
                 }
@@ -80,7 +86,6 @@ async fn read_stations(
     // we batch into chunks, so that we don't lose all our progress if we CTRL+C it
     for chunk in chunks.progress() {
         let transaction = pool.begin().await?;
-
         futures::stream::iter(chunk)
             .for_each(|station| async move {
                 let result = sqlx::query!(
@@ -100,21 +105,29 @@ async fn read_stations(
                 .execute(pool)
                 .await;
 
-                // match result {
-                //     Ok(_) => {
-                //         info!("Succeeded to insert id {} name {}", station.id, station.name);
-                //     }
-                //     Err(error) => {
-                //         // these errors are mostly caused by player carriers, which we will just
-                //         // ignore (we won't use them for trading anyway)
-                //         if !error.to_string().contains("duplicate") {
-                //             warn!("Failed to insert id {} name {}: {}", station.id, station.name, error);
-                //         }
-                //     }
-                // }
+                match result {
+                    Ok(_) => {
+                        // info!("Succeeded to insert id {} name {}", station.id, station.name);
+                    }
+                    Err(error) => {
+                        // only show warnings if they aren't duplicates and aren't caused by player
+                        // carriers (most player carriers are not in the systems list, and we don't
+                        // need them for the trade planner)
+                        // if !error.to_string().contains("duplicate")
+                        if !station
+                                .typ
+                                .as_ref()
+                                .is_some_and(|typ| *typ == StationType::FleetCarrier)
+                        {
+                            warn!(
+                                "Failed to insert id {} name {}: {}",
+                                station.id, station.name, error
+                            );
+                        }
+                    }
+                }
             })
             .await;
-
         transaction.commit().await?;
     }
 

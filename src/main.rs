@@ -30,7 +30,6 @@ enum Commands {
     },
 
     /// Listens to EDDN to receive updated commodity data
-    #[command(arg_required_else_help = true)]
     Listen {
     },
 
@@ -56,24 +55,11 @@ async fn main() -> Result<()> {
             edsm::ingest_edsm(systems_json_path, stations_json_path).await?;
             Ok(())
         },
-        Commands::Listen {  } => todo!(),
+        Commands::Listen {  } => {
+            info!("Listening to EDDN");
+            eddn::listen().await?;
+            Ok(())
+        },
 
     }
-
-    // for envelope in eddn::subscribe(eddn::URL) {
-    //     if envelope.is_err() {
-    //         continue;
-    //     }
-    //
-    //     match envelope.ok().unwrap().message {
-    //         eddn::Message::Commodity(commodity) => {
-    //             dbg!(commodity);
-    //         },
-    //
-    //         eddn::Message::Journal(journal) => {
-    //             dbg!(journal);
-    //         }
-    //         _ => {}
-    //     }
-    // }
 }

@@ -5,6 +5,8 @@ PostgreSQL database with PostGIS enabled.
 
 This will hopefully be useful in a trade route calculator I'm planning to make in the future.
 
+Parts of the SQL queries are based on [Galos](https://github.com/nixpulvis/galos/) by Nathan Lilienthal.
+
 ## Running
 Setup database:
 
@@ -16,8 +18,15 @@ sqlx migrate run
 Import EDSM data:
 
 ```
-cargo run -- ingest-edsm --systems-json-path systemsPopulated.json --stations-json-path stations.json
+cargo run --release -- ingest-edsm --systems-json-path systemsPopulated.json --stations-json-path stations.json
 ```
+
+Listen to data from EDDN:
+
+```
+cargo run --release -- listen
+```
+
 
 ## Licence
 Copyright (c) 2025 Matt Young.
