@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO stations (\n                        id, distance_to_arrival, name, market_id, system_id, landing_pad\n                    ) VALUES (\n                        $1, $2, $3, $4, $5, NULL\n                    );\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Float4",
+        "Varchar",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "de5bc8afee1f7fa324f92c9a6206f810c0d110afc8231ddf3f1f47f129fceb8b"
+}

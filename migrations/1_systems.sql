@@ -1,6 +1,6 @@
 CREATE TABLE systems (
     id BIGINT PRIMARY KEY NOT NULL UNIQUE,
-    name VARCHAR(128) NOT NULL UNIQUE,
+    name VARCHAR(128) NOT NULL,
     date TIMESTAMP NOT NULL,
     coords geometry(POINTZ) NOT NULL
 );

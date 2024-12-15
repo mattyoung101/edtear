@@ -8,6 +8,7 @@ CREATE TABLE listings (
     demand_bracket INT,
     stock INT,
     stock_bracket INT,
+    listed_at timestamp,
 
     PRIMARY KEY (market_id, name),
     FOREIGN KEY (market_id) REFERENCES stations(market_id)
