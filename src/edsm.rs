@@ -137,12 +137,13 @@ async fn read_stations(
 pub async fn ingest_edsm(
     systems_json_path: std::path::PathBuf,
     stations_json_path: std::path::PathBuf,
+    url: String
 ) -> Result<()> {
     info!("Setting up PostgreSQL pool");
     let var_name = PgPoolOptions::new();
     let pool = var_name
         .max_connections(64)
-        .connect("postgres://postgres:password@localhost/edtear")
+        .connect(&url)
         .await?;
 
     read_systems(systems_json_path, &pool).await?;

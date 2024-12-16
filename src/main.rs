@@ -27,10 +27,16 @@ enum Commands {
         #[arg(long)]
         /// Path to stations JSON from EDSM
         stations_json_path: std::path::PathBuf,
+        #[arg(long)]
+        /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
+        url: String
     },
 
     /// Listens to EDDN to receive updated commodity data
     Listen {
+        #[arg(long)]
+        /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
+        url: String
     },
 
     /// Prints version information.
@@ -50,14 +56,14 @@ async fn main() -> Result<()> {
             println!("Copyright (c) 2025 Matt Young. ISC Licence.");
             Ok(())
         }
-        Commands::IngestEdsm { systems_json_path, stations_json_path } => {
+        Commands::IngestEdsm { systems_json_path, stations_json_path , url } => {
             info!("Importing EDSM dump");
-            edsm::ingest_edsm(systems_json_path, stations_json_path).await?;
+            edsm::ingest_edsm(systems_json_path, stations_json_path, url).await?;
             Ok(())
         },
-        Commands::Listen {  } => {
+        Commands::Listen { url } => {
             info!("Listening to EDDN");
-            eddn::listen().await?;
+            eddn::listen(url).await?;
             Ok(())
         },
 

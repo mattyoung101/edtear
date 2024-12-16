@@ -4,12 +4,12 @@ use sqlx::postgres::PgPoolOptions;
 
 // Ingests data from the Elite: Dangerous Data Network
 
-pub async fn listen() -> Result<()> {
-    info!("Setting up PostgreSQL pool");
+pub async fn listen(url: String) -> Result<()> {
+    info!("Setting up PostgreSQL pool on {}", url);
     let var_name = PgPoolOptions::new();
     let pool = var_name
         .max_connections(8)
-        .connect("postgres://postgres:password@localhost/edtear")
+        .connect(&url)
         .await?;
 
     for env in eddn::subscribe(eddn::URL) {
