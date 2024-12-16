@@ -12,4 +12,5 @@ RUN SQLX_OFFLINE=true cargo install --path .
 ENV RUST_LOG=info
 ARG RUST_LOG=info
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
-ENTRYPOINT ["edtear", "listen", "--url", "postgres://postgres:password@edtear-postgres-1:5432/edtear"]
+ARG POSTGRES_PASSWORD="password"
+ENTRYPOINT edtear listen --url postgres://postgres:${POSTGRES_PASSWORD}@edtear-postgres-1:5432/edtear

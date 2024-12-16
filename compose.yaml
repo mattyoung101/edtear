@@ -1,5 +1,4 @@
 services:
-  # FIXME https://registry.hub.docker.com/r/postgis/postgis/
   postgres:
     image: "postgis/postgis:16-3.5-alpine"
     restart: always
@@ -11,7 +10,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: edtear
-      POSTGRES_HOST_AUTH_METHOD: trust
+    # This will contain our password
+    env_file: "postgres.env"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -19,6 +19,7 @@ services:
       retries: 5
   edtear:
     build: .
+    env_file: "postgres.env"
     depends_on:
       postgres:
         condition: service_healthy
