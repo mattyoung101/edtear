@@ -1,4 +1,3 @@
-use clap::error;
 use color_eyre::eyre::Result;
 use edsm_dumps_model::model::{
     station::{Station, StationType},
