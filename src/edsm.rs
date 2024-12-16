@@ -5,7 +5,7 @@ use edsm_dumps_model::model::{
 };
 use futures::StreamExt;
 use indicatif::ProgressIterator;
-use log::{info, warn, error};
+use log::{info, warn};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use std::{fs::File, io::BufReader};
 
