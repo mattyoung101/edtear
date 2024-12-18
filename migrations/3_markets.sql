@@ -1,4 +1,4 @@
-CREATE TABLE listings (
+CREATE TABLE IF NOT EXISTS listings (
     market_id BIGINT NOT NULL,
     name VARCHAR(128),
     mean_price INT,
