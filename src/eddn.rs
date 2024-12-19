@@ -45,17 +45,7 @@ pub async fn listen(url: String) -> Result<()> {
                                 listed_at
                             ) VALUES (
                                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-                            )
-                            ON CONFLICT (market_id, name)
-                            DO UPDATE SET
-                                mean_price = $3,
-                                buy_price = $4,
-                                sell_price = $5,
-                                demand = $6,
-                                demand_bracket = $7,
-                                stock = $8,
-                                stock_bracket = $9,
-                                listed_at = $10
+                            );
                         "#,
                             market_id,
                             commodity.name,
