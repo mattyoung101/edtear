@@ -17,6 +17,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 3
+        max-size: 25m
   edtear:
     build: .
     env_file: "postgres.env"
@@ -25,6 +30,11 @@ services:
       postgres:
         condition: service_healthy
         restart: true
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 3
+        max-size: 25m
 
 volumes:
   postgres-data:
