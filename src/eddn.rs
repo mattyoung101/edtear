@@ -7,27 +7,19 @@ use sqlx::postgres::PgPoolOptions;
 pub async fn listen(url: String) -> Result<()> {
     info!("Setting up PostgreSQL pool on {}", url);
     let var_name = PgPoolOptions::new();
-    let pool = var_name
-        .max_connections(8)
-        .connect(&url)
-        .await?;
+    let pool = var_name.max_connections(8).connect(&url).await?;
 
     for env in eddn::subscribe(eddn::URL) {
         match env {
             Ok(envelope) => {
                 if let eddn::Message::Commodity(commodity) = envelope.message {
                     let market = commodity.event;
-                    info!(
-                        "Received market for {} in {}",
-                        market.station_name, market.system_name
-                    );
-
                     let market_id = market.market_id as i64;
 
                     // insert into the DB
                     let transaction = pool.begin().await?;
-
                     let time = envelope.header.gateway_timestamp.naive_utc();
+                    let mut success = true;
 
                     for commodity in market.commodities {
                         let result = sqlx::query!(
@@ -64,15 +56,24 @@ pub async fn listen(url: String) -> Result<()> {
                         match result {
                             Ok(_) => {}
                             Err(error) => {
-                                warn!("Failed to insert commodity {}: {}", commodity.name, error);
-                                // cancel the update, makes logging clearer (maybe clear this for
-                                // prod)
+                                warn!(
+                                    "Failed to insert commodity {} for station {} in {}: {}",
+                                    commodity.name, market.station_name, market.system_name, error
+                                );
+                                // cancel the entire update
+                                success = false;
                                 break;
                             }
                         }
                     }
-
                     transaction.commit().await?;
+
+                    if success {
+                        info!(
+                            "Inserted market data for {} in {}",
+                            market.station_name, market.system_name
+                        );
+                    }
                 }
             }
             Err(error) => {
