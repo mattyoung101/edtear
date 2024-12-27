@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT * FROM listings\n        WHERE market_id = $1\n        AND listed_at >= NOW() - INTERVAL '1 hour'\n        LIMIT 1;\n    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "mean_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "buy_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "sell_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "demand",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "demand_bracket",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "stock",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "stock_bracket",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "listed_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "aaf9274b3b0854869b1423e1c57755356839c43516e6ef8fc17adf29dc92bb84"
+}

@@ -1,8 +1,24 @@
 use color_eyre::eyre::Result;
 use log::{info, warn};
-use sqlx::postgres::PgPoolOptions;
+use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 // Ingests data from the Elite: Dangerous Data Network
+
+/// Returns whether or not the given market ID has listings in the last 1 hour
+async fn has_listings_1h(market_id: i64, pool: &Pool<Postgres>) -> bool {
+    let result = sqlx::query!(
+        r#"
+        SELECT * FROM listings
+        WHERE market_id = $1
+        AND listed_at >= NOW() - INTERVAL '1 hour'
+        LIMIT 1;
+    "#,
+        market_id
+    )
+    .fetch_one(pool)
+    .await;
+    return result.is_ok();
+}
 
 pub async fn listen(url: String) -> Result<()> {
     info!("Setting up PostgreSQL pool on {}", url);
@@ -15,6 +31,16 @@ pub async fn listen(url: String) -> Result<()> {
                 if let eddn::Message::Commodity(commodity) = envelope.message {
                     let market = commodity.event;
                     let market_id = market.market_id as i64;
+
+                    // check if this system already has a record in the last 1 hour (to save disk
+                    // space)
+                    if has_listings_1h(market_id, &pool).await {
+                        info!(
+                            "Station {} in {} already updated in the last 1 hour, skipping",
+                            market.station_name, market.system_name
+                        );
+                        continue;
+                    }
 
                     // insert into the DB
                     let transaction = pool.begin().await?;

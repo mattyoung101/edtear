@@ -53,7 +53,7 @@ async fn main() -> Result<()> {
     match args.command {
         Commands::Version {} => {
             println!("EDTear v{VERSION}, the Elite: Dangerous Trade Ear");
-            println!("Copyright (c) 2025 Matt Young. ISC Licence.");
+            println!("Copyright (c) 2024 Matt Young. ISC Licence.");
             Ok(())
         }
         Commands::IngestEdsm { systems_json_path, stations_json_path , url } => {
