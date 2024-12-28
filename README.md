@@ -1,9 +1,11 @@
 # EDTear
 This is the "Elite: Dangerous Trade Ear", a service that subscribes to [EDDN](https://github.com/EDCD/EDDN),
 and ingests nightly dumps from [EDSM](https://www.edsm.net/en/nightly-dumps), and sends that all to a
-PostgreSQL database with PostGIS enabled.
+PostgreSQL database with PostGIS enabled. It also allows you to see some interesting statistics about the
+Elite: Dangerous trade universe, once the data has been collected.
 
-This will hopefully be useful in a trade route calculator I'm planning to make in the future.
+EDTear is used to create the data for [Kural](https://github.com/mattyoung101/kural), my other project to
+build a high-performance trade-route calculator based on integer linear programming.
 
 Parts of the SQL queries are based on [Galos](https://github.com/nixpulvis/galos/) by Nathan Lilienthal.
 
@@ -27,6 +29,12 @@ Listen to data from EDDN:
 
 ```
 cargo run --release -- listen --url postgres://postgres:password@localhost/edtear
+```
+
+See some interesting statistics about the data, once collected:
+
+```
+cargo run --release -- stats --url postgres://postgres:password@localhost/edtear
 ```
 
 ## Running in Docker Compose

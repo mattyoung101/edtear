@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        WITH latest_listings AS (\n            SELECT\n                market_id,\n                name,\n                MAX(listed_at) AS latest_listed_at\n            FROM\n                listings\n            WHERE stock > 0\n            GROUP BY\n                market_id, name\n        )\n        SELECT\n            l.market_id,\n            l.name,\n            l.mean_price,\n            l.buy_price,\n            l.sell_price,\n            l.demand,\n            l.demand_bracket,\n            l.stock,\n            l.stock_bracket,\n            l.listed_at\n        FROM\n            listings l\n        INNER JOIN\n            latest_listings ll\n        ON\n            l.market_id = ll.market_id\n            AND l.name = ll.name\n            AND l.listed_at = ll.latest_listed_at\n        WHERE l.stock > 0;\n    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "mean_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "buy_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "sell_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "demand",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "demand_bracket",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "stock",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "stock_bracket",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "listed_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "69a336fdaab5181b0de5cac33d2e5bfc5474780faa9cc500a5c0064ab58c8e1a"
+}

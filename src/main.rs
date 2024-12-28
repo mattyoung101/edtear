@@ -3,6 +3,7 @@ use log::info;
 use color_eyre::eyre::Result;
 pub mod edsm;
 pub mod eddn;
+pub mod stats;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -39,6 +40,13 @@ enum Commands {
         url: String
     },
 
+    /// Displays statistics for a connected database
+    Stats {
+        #[arg(long)]
+        /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
+        url: String
+    },
+
     /// Prints version information.
     #[command()]
     Version {},
@@ -66,6 +74,10 @@ async fn main() -> Result<()> {
             eddn::listen(url).await?;
             Ok(())
         },
+        Commands::Stats { url } => {
+            stats::display_stats(url).await?;
+            Ok(())
+        }
 
     }
 }
