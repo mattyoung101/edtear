@@ -1,0 +1,44 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT stat.name as station_name, sys.name as sys_name, list.buy_price as buy_price,\n            list.stock as stock, list.name as commodity_name\n        FROM listings list\n        INNER JOIN stations stat ON list.market_id = stat.market_id\n        INNER JOIN systems sys ON stat.id = sys.id\n        ORDER BY list.stock DESC\n        LIMIT 1;\n    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "station_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "sys_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "buy_price",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "stock",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "commodity_name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "70dd0db5e8b4a3a1961a98b9c884804bb9bd82638f9b51cf3b4439e30dc0a048"
+}

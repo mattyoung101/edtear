@@ -1,8 +1,9 @@
 use clap::{Parser, Subcommand};
-use log::info;
 use color_eyre::eyre::Result;
-pub mod edsm;
+use log::info;
 pub mod eddn;
+pub mod edsm;
+pub mod spansh;
 pub mod stats;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -30,21 +31,32 @@ enum Commands {
         stations_json_path: std::path::PathBuf,
         #[arg(long)]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
-        url: String
+        url: String,
+    },
+
+    /// Ingests Spansh's nightly dumps to insert landing pad sizes. Must be run after ingest-edsm.
+    #[command(arg_required_else_help = true)]
+    IngestSpansh {
+        /// Path to galaxy stations JSON from Spansh's website
+        #[arg(long)]
+        galaxy_stations_json_path: std::path::PathBuf,
+        #[arg(long)]
+        /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
+        url: String,
     },
 
     /// Listens to EDDN to receive updated commodity data
     Listen {
         #[arg(long)]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
-        url: String
+        url: String,
     },
 
     /// Displays statistics for a connected database
     Stats {
         #[arg(long)]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
-        url: String
+        url: String,
     },
 
     /// Prints version information.
@@ -64,20 +76,31 @@ async fn main() -> Result<()> {
             println!("Copyright (c) 2024 Matt Young. ISC Licence.");
             Ok(())
         }
-        Commands::IngestEdsm { systems_json_path, stations_json_path , url } => {
+        Commands::IngestEdsm {
+            systems_json_path,
+            stations_json_path,
+            url,
+        } => {
             info!("Importing EDSM dump");
             edsm::ingest_edsm(systems_json_path, stations_json_path, url).await?;
             Ok(())
-        },
+        }
         Commands::Listen { url } => {
             info!("Listening to EDDN");
             eddn::listen(url).await?;
             Ok(())
-        },
+        }
         Commands::Stats { url } => {
             stats::display_stats(url).await?;
             Ok(())
         }
-
+        Commands::IngestSpansh {
+            galaxy_stations_json_path,
+            url,
+        } => {
+            info!("Importing Spansh dump");
+            spansh::read_spansh_stations(galaxy_stations_json_path, url).await?;
+            Ok(())
+        },
     }
 }

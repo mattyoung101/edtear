@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                            UPDATE stations SET landing_pad = $1\n                            WHERE name = $2 AND system_id = $3;\n                        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6ad964fb24397a1715f923bd3061af60d760277c71a013b7178e0d040fb146aa"
+}

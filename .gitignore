@@ -2,3 +2,4 @@
 *.cbor
 dumps
 postgres.env
+postgres_url.txt
