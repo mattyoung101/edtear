@@ -173,7 +173,7 @@ pub async fn display_stats(url: String) -> Result<()> {
         &format!(
             "${}\n({})",
             total_galaxy_cost.to_formatted_string(&Locale::en_AU),
-            (precision_f64(total_galaxy_cost as f64, 1) as u64).to_english()
+            (precision_f64(total_galaxy_cost as f64, 3) as u64).to_english()
         ),
     ]);
     table.add_row(vec![
