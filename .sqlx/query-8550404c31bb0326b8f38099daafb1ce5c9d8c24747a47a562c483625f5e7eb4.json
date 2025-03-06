@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT COUNT(DISTINCT s.id) AS unique_stations\n        FROM listings l\n        JOIN stations s ON l.market_id = s.market_id\n        WHERE l.listed_at >= NOW() - INTERVAL '24 hours';\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "unique_stations",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "8550404c31bb0326b8f38099daafb1ce5c9d8c24747a47a562c483625f5e7eb4"
+}

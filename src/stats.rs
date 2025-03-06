@@ -80,7 +80,7 @@ pub async fn display_stats(url: String) -> Result<()> {
     let most_expensive_future = sqlx::query!(
         r#"
         SELECT stat.name as station_name, sys.name as sys_name, list.buy_price as buy_price,
-            list.stock as stock, list.name as commodity_name
+            list.stock as stock, list.name as commodity_name, list.listed_at as listed_at
         FROM listings list
         INNER JOIN stations stat ON list.market_id = stat.market_id
         INNER JOIN systems sys ON stat.id = sys.id
@@ -102,6 +102,23 @@ pub async fn display_stats(url: String) -> Result<()> {
     "#
     )
     .fetch_one(&pool);
+    let listings_last_24h_future = sqlx::query!(
+        r#"
+        SELECT COUNT(*)
+        FROM listings
+        WHERE listed_at >= NOW() - INTERVAL '24 hours';
+    "#
+    )
+    .fetch_one(&pool);
+    let stations_updated_24h_future = sqlx::query!(
+        r#"
+        SELECT COUNT(DISTINCT s.id) AS unique_stations
+        FROM listings l
+        JOIN stations s ON l.market_id = s.market_id
+        WHERE l.listed_at >= NOW() - INTERVAL '24 hours';
+        "#
+    )
+    .fetch_one(&pool);
 
     #[cfg_attr(rustfmt, rustfmt_skip)]
     let (
@@ -111,7 +128,9 @@ pub async fn display_stats(url: String) -> Result<()> {
             unique_stations,
             latest_listings,
             most_expensive,
-            most_numerous
+            most_numerous,
+            listings_last_24h,
+            stations_updated_24h,
         )
     = futures::join!(
         num_systems_future,
@@ -120,7 +139,9 @@ pub async fn display_stats(url: String) -> Result<()> {
         unique_stations_future,
         latest_listings_future,
         most_expensive_future,
-        most_numerous_future
+        most_numerous_future,
+        listings_last_24h_future,
+        stations_updated_24h_future,
     );
 
     let unique_stations_count = unique_stations.unwrap().count.unwrap();
@@ -152,6 +173,14 @@ pub async fn display_stats(url: String) -> Result<()> {
         &total_stations_count.to_formatted_string(&Locale::en_AU),
     ]);
     table.add_row(vec![
+        "Stations updated (last 24h)",
+        &stations_updated_24h
+            .unwrap()
+            .unique_stations
+            .unwrap()
+            .to_formatted_string(&Locale::en_AU),
+    ]);
+    table.add_row(vec![
         "Listings",
         &num_listings
             .unwrap()
@@ -160,9 +189,17 @@ pub async fn display_stats(url: String) -> Result<()> {
             .to_formatted_string(&Locale::en_AU),
     ]);
     table.add_row(vec![
+        "Listings (last 24h)",
+        &listings_last_24h
+            .unwrap()
+            .count
+            .unwrap()
+            .to_formatted_string(&Locale::en_AU),
+    ]);
+    table.add_row(vec![
         "Unique stations tracked",
         format!(
-            "{} ({}%)",
+            "{} ({}% of all stations)",
             unique_stations_count.to_formatted_string(&Locale::en_AU),
             (unique_stations_count as f32) / (total_stations_count as f32) * 100.0
         )
@@ -179,12 +216,13 @@ pub async fn display_stats(url: String) -> Result<()> {
     table.add_row(vec![
         "Most expensive item",
         &format!(
-            "{}\nFrom {} in {}\nCost ${}, units available {}",
+            "{}\nFrom {} in {}\nCost ${}, units available {}\nListed at {}",
             &exp.commodity_name,
             &exp.station_name,
             &exp.sys_name,
             &exp.buy_price.to_formatted_string(&Locale::en_AU),
-            &exp.stock.to_formatted_string(&Locale::en_AU)
+            &exp.stock.to_formatted_string(&Locale::en_AU),
+            &exp.listed_at
         ),
     ]);
     table.add_row(vec![
@@ -199,8 +237,6 @@ pub async fn display_stats(url: String) -> Result<()> {
         ),
     ]);
 
-    // listings (last 24 hours)
-    // unique stations updated (last 24 hours)
     // top 5 stations with most listings (i.e. the most visited ones)
     // number of unique commodities tracked
     // total number of commodities tracked

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        SELECT stat.name as station_name, sys.name as sys_name, list.buy_price as buy_price,\n            list.stock as stock, list.name as commodity_name\n        FROM listings list\n        INNER JOIN stations stat ON list.market_id = stat.market_id\n        INNER JOIN systems sys ON stat.id = sys.id\n        WHERE stock > 0\n        ORDER BY list.buy_price DESC\n        LIMIT 1;\n    ",
+  "query": "\n        SELECT stat.name as station_name, sys.name as sys_name, list.buy_price as buy_price,\n            list.stock as stock, list.name as commodity_name, list.listed_at as listed_at\n        FROM listings list\n        INNER JOIN stations stat ON list.market_id = stat.market_id\n        INNER JOIN systems sys ON stat.id = sys.id\n        WHERE stock > 0\n        ORDER BY list.buy_price DESC\n        LIMIT 1;\n    ",
   "describe": {
     "columns": [
       {
@@ -27,6 +27,11 @@
         "ordinal": 4,
         "name": "commodity_name",
         "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "listed_at",
+        "type_info": "Timestamp"
       }
     ],
     "parameters": {
@@ -37,8 +42,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "02cef6a9339d1d41d9edbbad6d2e0ea973d0d71053769d20ee9d8e9d3176cf67"
+  "hash": "5ee8c32c5b72fd13fc8066fa7f4a8be2ee6c8f9c2b7c8334f71e4169da6eaea6"
 }
