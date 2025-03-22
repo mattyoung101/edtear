@@ -1,8 +1,8 @@
 # EDTear
 This is the "Elite: Dangerous Trade Ear", a service that subscribes to [EDDN](https://github.com/EDCD/EDDN),
-and ingests nightly dumps from [EDSM](https://www.edsm.net/en/nightly-dumps), and sends that all to a
-PostgreSQL database with PostGIS enabled. It also allows you to see some interesting statistics about the
-Elite: Dangerous trade universe, once the data has been collected.
+and ingests nightly dumps from [EDSM](https://www.edsm.net/en/nightly-dumps) and [Spansh](TODO), and sends all
+that to a PostgreSQL database with PostGIS enabled. It also allows you to see some interesting statistics
+about the Elite: Dangerous trade universe, once the data has been collected.
 
 EDTear is used to create the data for [Kural](https://github.com/mattyoung101/kural), my other project to
 build a high-performance trade-route calculator based on integer linear programming.
@@ -23,6 +23,12 @@ Import EDSM data:
 
 ```
 cargo run --release -- ingest-edsm --systems-json-path systemsPopulated.json --stations-json-path stations.json --url postgres://postgres:password@localhost/edtear
+```
+
+Import Spansh's data (for landing pad sizes, which are not part of EDSM):
+
+```
+cargo run --release -- ingest-spansh --systems --galaxy-stations-json-path stations.json --url postgres://postgres:password@localhost/edtear
 ```
 
 Listen to data from EDDN:
@@ -69,3 +75,6 @@ And now deploy with the imported data: `docker compose up -d`
 Copyright (c) 2024 Matt Young.
 
 EDTear is available under the ISC licence.
+
+## Thanks
+Special thanks to Nathan Lilienthal, EDSM, Spansh, and all the commanders who generously provide data to EDDN.
