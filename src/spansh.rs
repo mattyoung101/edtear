@@ -5,7 +5,7 @@ use color_eyre::eyre::Result;
 use indicatif::ProgressIterator;
 use log::{info, warn};
 use serde::Deserialize;
-use sqlx::{postgres::PgPoolOptions, Acquire, Pool, Postgres};
+use sqlx::postgres::PgPoolOptions;
 use std::{fs::File, io::BufReader};
 
 // This is a very condensed schema to only process the landing pad data

@@ -17,7 +17,7 @@ async fn has_listings_1h(market_id: i64, pool: &Pool<Postgres>) -> bool {
     )
     .fetch_one(pool)
     .await;
-    return result.is_ok();
+    result.is_ok()
 }
 
 pub async fn listen(url: String) -> Result<()> {
@@ -30,7 +30,7 @@ pub async fn listen(url: String) -> Result<()> {
             Ok(envelope) => {
                 if let eddn::Message::Commodity(commodity) = envelope.message {
                     let market = commodity.event;
-                    let market_id = market.market_id as i64;
+                    let market_id = market.market_id;
 
                     // check if this system already has a record in the last 1 hour (to save disk
                     // space)

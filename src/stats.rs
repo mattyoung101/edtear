@@ -120,7 +120,7 @@ pub async fn display_stats(url: String) -> Result<()> {
     )
     .fetch_one(&pool);
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
+    #[rustfmt::skip]
     let (
             num_systems,
             num_stations,

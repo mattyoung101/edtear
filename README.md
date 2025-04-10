@@ -1,8 +1,9 @@
 # EDTear
 This is the "Elite: Dangerous Trade Ear", a service that subscribes to [EDDN](https://github.com/EDCD/EDDN),
-and ingests nightly dumps from [EDSM](https://www.edsm.net/en/nightly-dumps) and [Spansh](TODO), and sends all
-that to a PostgreSQL database with PostGIS enabled. It also allows you to see some interesting statistics
-about the Elite: Dangerous trade universe, once the data has been collected.
+and ingests nightly dumps from [EDSM](https://www.edsm.net/en/nightly-dumps) and
+[Spansh](https://spansh.co.uk/dumps), and sends all that to a PostgreSQL database with PostGIS enabled. It
+also allows you to see some interesting statistics about the Elite: Dangerous trade universe, once the data
+has been collected.
 
 EDTear is used to create the data for [Kural](https://github.com/mattyoung101/kural), my other project to
 build a high-performance trade-route calculator based on integer linear programming.
@@ -12,20 +13,20 @@ Parts of the SQL queries are based on [Galos](https://github.com/nixpulvis/galos
 ## Running
 Requires a recent Rust version (I'm using 1.82), PostgresSQL 16+ with PostGIS, and the Rust `sqlx` CLI.
 
-Setup database:
+Setup the database:
 
 ```
 sqlx database create
 sqlx migrate run
 ```
 
-Import EDSM data:
+Import EDSM data (download it [here](https://www.edsm.net/en/nightly-dumps)):
 
 ```
 cargo run --release -- ingest-edsm --systems-json-path systemsPopulated.json --stations-json-path stations.json --url postgres://postgres:password@localhost/edtear
 ```
 
-Import Spansh's data (for landing pad sizes, which are not part of EDSM):
+Import Spansh's data (for landing pad sizes, which are not part of EDSM; download it [here](https://spansh.co.uk/dumps)):
 
 ```
 cargo run --release -- ingest-spansh --systems --galaxy-stations-json-path stations.json --url postgres://postgres:password@localhost/edtear
@@ -72,9 +73,9 @@ Shutdown the current Postgres: `docker compose down`
 And now deploy with the imported data: `docker compose up -d`
 
 ## Licence
-Copyright (c) 2024 Matt Young.
+Copyright (c) 2024-2025 Matt Young.
 
 EDTear is available under the ISC licence.
 
-## Thanks
+## Special thanks
 Special thanks to Nathan Lilienthal, EDSM, Spansh, and all the commanders who generously provide data to EDDN.

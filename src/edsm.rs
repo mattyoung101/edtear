@@ -148,5 +148,5 @@ pub async fn ingest_edsm(
     read_systems(systems_json_path, &pool).await?;
     read_stations(stations_json_path, &pool).await?;
 
-    return Ok(());
+    Ok(())
 }
