@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 eddn = "0.1.0"
-clap = { version = "4.5.20", features = ["derive"] }
+clap = { version = "4.5.20", features = ["derive", "env"] }
 env_logger = "0.11.5"
 log = "0.4.22"
 edsm-dumps-model = "0.9.1"
@@ -21,3 +21,4 @@ num-format = "0.4.4"
 # not on crates.io for some reason
 num2english = { git = "https://github.com/trvswgnr/num2english", branch = "main" }
 serde = { version = "1.0.217", features = ["derive"] }
+dotenvy = { version = "0.15.7"}

@@ -44,6 +44,11 @@ See some interesting statistics about the data, once collected:
 cargo run --release -- stats --url postgres://postgres:password@localhost/edtear
 ```
 
+If no url is supplied EDTear will default to the environment variable `DATABASE_URL` supplied within `.env`:
+```
+DATABASE_URL=postgres://postgres:password@localhost/edtear
+```
+
 ## Running in Docker Compose
 Once you've set up the database locally, you can also run EDTear through Docker Compose, which may be useful
 for server deployments.

@@ -29,7 +29,7 @@ enum Commands {
         #[arg(long)]
         /// Path to stations JSON from EDSM
         stations_json_path: std::path::PathBuf,
-        #[arg(long)]
+        #[arg(long, env = "DATABASE_URL")]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
         url: String,
     },
@@ -40,21 +40,21 @@ enum Commands {
         /// Path to galaxy stations JSON from Spansh's website
         #[arg(long)]
         galaxy_stations_json_path: std::path::PathBuf,
-        #[arg(long)]
+        #[arg(long, env = "DATABASE_URL")]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
         url: String,
     },
 
     /// Listens to EDDN to receive updated commodity data
     Listen {
-        #[arg(long)]
+        #[arg(long, env = "DATABASE_URL")]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
         url: String,
     },
 
     /// Displays statistics for a connected database
     Stats {
-        #[arg(long)]
+        #[arg(long, env = "DATABASE_URL")]
         /// Postgres connection URL. Recommended: postgres://postgres:password@localhost/edtear
         url: String,
     },
@@ -66,6 +66,7 @@ enum Commands {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    dotenvy::dotenv_override()?;
     let args = EdTearCli::parse();
     env_logger::init();
     color_eyre::install()?;
