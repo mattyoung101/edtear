@@ -8,7 +8,7 @@ eddn = "0.1.0"
 clap = { version = "4.5.20", features = ["derive", "env"] }
 env_logger = "0.11.5"
 log = "0.4.22"
-edsm-dumps-model = "0.9.1"
+edsm-dumps-model = "0.9.2"
 # serde = { version = "1.0.216", features = ["derive"] }
 serde_json = "1.0.133"
 indicatif = { version = "0.17.9", features = ["futures", "rayon", "tokio"] }
