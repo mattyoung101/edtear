@@ -4,6 +4,20 @@ services:
     restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data/
+    command: >
+      -c shared_buffers=4GB
+      -c checkpoint_timeout=30min
+      -c checkpoint_completion_target=0.9
+      -c wal_writer_delay=500ms
+      -c commit_delay=10000
+      -c autovacuum_vacuum_cost_limit=2000
+      -c autovacuum_vacuum_cost_delay=20ms
+      -c synchronous_commit=off
+      -c wal_writer_flush_after=16MB
+      -c bgwriter_delay=500ms
+      -c max_wal_size=2GB
+      -c autovacuum_naptime=5min
+      -c commit_siblings=5
     # Non-default port so we don't interfere with system Postgres
     ports:
       - "6543:5432"
