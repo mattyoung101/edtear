@@ -1,5 +1,8 @@
+#![feature(duration_constructors_lite)]
+
 use clap::{Parser, Subcommand};
 use color_eyre::eyre::Result;
+use env_logger::{Builder, Env};
 use log::info;
 pub mod eddn;
 pub mod edsm;
@@ -68,7 +71,8 @@ enum Commands {
 async fn main() -> Result<()> {
     dotenvy::dotenv_override()?;
     let args = EdTearCli::parse();
-    env_logger::init();
+    let env = Env::new().filter_or("RUST_LOG", "info");
+    Builder::from_env(env).init();
     color_eyre::install()?;
 
     match args.command {
