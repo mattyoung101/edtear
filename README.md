@@ -11,7 +11,7 @@ build a high-performance trade-route calculator based on integer linear programm
 Parts of the SQL queries are based on [Galos](https://github.com/nixpulvis/galos/) by Nathan Lilienthal.
 
 ## Running
-Requires a recent Rust version (I'm using 1.82), PostgresSQL 16+ with PostGIS, and the Rust `sqlx` CLI.
+Requires **nighly Rust**, PostgresSQL 16+ with PostGIS, and the Rust `sqlx` CLI.
 
 Setup the database:
 
