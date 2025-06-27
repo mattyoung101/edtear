@@ -1,6 +1,6 @@
 [package]
 name = "edtear"
-version = "1.4.0"
+version = "1.5.0"
 edition = "2021"
 
 [dependencies]
@@ -22,3 +22,4 @@ num-format = "0.4.4"
 num2english = { git = "https://github.com/trvswgnr/num2english", branch = "main" }
 serde = { version = "1.0.217", features = ["derive"] }
 dotenvy = { version = "0.15.7"}
+lazy_static = "1.5.0"

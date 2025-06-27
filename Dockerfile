@@ -1,5 +1,5 @@
 # Alpine is broke, so we're using Debian
-FROM rust:slim
+FROM rust:1.88-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y pkgconf libzmq3-dev libssl-dev gcc-multilib

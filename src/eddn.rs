@@ -1,8 +1,19 @@
+use std::{
+    process::exit, sync::{atomic::AtomicU32, Arc, Mutex}, thread, time::Duration
+};
+
 use color_eyre::eyre::Result;
-use log::{info, warn};
+use lazy_static::lazy_static;
+use log::{error, info, warn};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use tokio::sync::watch;
 
 // Ingests data from the Elite: Dangerous Data Network
+
+lazy_static! {
+    /// Keeps track of the number of items added in the last hour
+    static ref WATCHDOG_ADDED: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+}
 
 /// Returns whether or not the given market ID has listings in the last 1 hour
 async fn has_listings_1h(market_id: i64, pool: &Pool<Postgres>) -> bool {
@@ -20,10 +31,33 @@ async fn has_listings_1h(market_id: i64, pool: &Pool<Postgres>) -> bool {
     result.is_ok()
 }
 
+/// Runs every 1 hour to ensure that the application is still receiving data. If it is not, quits
+/// the whole application (Docker will restart us)
+fn watchdog() {
+    loop {
+        thread::sleep(Duration::from_hours(1));
+        let mut count = WATCHDOG_ADDED.lock().unwrap();
+        if *count > 0 {
+            // watchdog passed, reset the count and wait again
+            info!("Watchdog OK");
+            *count = 0;
+        } else {
+            error!("Watchdog FAILED! 0 items added in the last hour. Quitting now!");
+            // docker will restart us (hopefully)
+            exit(1);
+        }
+    }
+}
+
 pub async fn listen(url: String) -> Result<()> {
     info!("Setting up PostgreSQL pool on {}", url);
     let var_name = PgPoolOptions::new();
     let pool = var_name.max_connections(8).connect(&url).await?;
+
+    info!("Starting watchdog");
+    thread::spawn(|| {
+        watchdog();
+    });
 
     for env in eddn::subscribe(eddn::URL) {
         match env {
@@ -80,7 +114,10 @@ pub async fn listen(url: String) -> Result<()> {
                         .await;
 
                         match result {
-                            Ok(_) => {}
+                            Ok(_) => {
+                                let mut count = WATCHDOG_ADDED.lock().unwrap();
+                                *count += 1;
+                            }
                             Err(error) => {
                                 warn!(
                                     "Failed to insert commodity {} for station {} in {}: {}",
